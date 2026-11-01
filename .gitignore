@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+data/
+.env
+.local-tools/
+node_modules/
+dist/
