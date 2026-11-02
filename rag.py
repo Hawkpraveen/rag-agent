@@ -14,6 +14,7 @@ import sys
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 from model_routing import select_route
+from app_help import app_help_answer
 
 
 class Ollama:
@@ -92,6 +93,7 @@ class Ollama:
             "the question does not need to appear verbatim in the document. "
             "Name each document when excerpts come from different documents. "
             "If a specific requested fact is absent, explain what is missing. "
+            "Do not fill gaps with generic advice, outside knowledge, or guessed steps. "
             "Cite factual claims with excerpt IDs such as [1]. Never invent facts or citations. "
             "Use short paragraphs or a concise bullet list."
         )
@@ -303,6 +305,9 @@ class Agent:
     def ask(self, question, top_k=4, min_score=0.25, model_mode='auto'):
         if model_mode not in {'auto', 'fast', 'thorough'}:
             raise ValueError('Use auto, fast, or thorough model mode.')
+        help_result = app_help_answer(question)
+        if help_result is not None:
+            return help_result
         if is_overview_question(question):
             # General overviews need coverage of the library, not a vector match
             # for vague terms such as "what does the doc contain". Round-robin
